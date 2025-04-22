@@ -46,11 +46,15 @@ async function trackPizza(orderId: string) {
 
   counter++;
   if (counter < MAX_ATTEMPTS) {
-    setTimeout(() => {
-      trackPizza(orderId);
-    }, POLL_INTERVAL_MS);
+    await timeout(POLL_INTERVAL_MS);
+    console.log(`Attempt ${counter}: Checking status...`);
+    await trackPizza(orderId);
   } else {
     console.log('Tracking ended after 20 minutes.');
     return;
   }
+}
+
+function timeout(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
