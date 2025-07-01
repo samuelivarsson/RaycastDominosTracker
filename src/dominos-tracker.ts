@@ -9,7 +9,7 @@ export default async function main(props: LaunchProps) {
 
 
 const MAX_ATTEMPTS = 40;
-const POLL_INTERVAL_MS = 30_000;
+const POLL_INTERVAL_MS = 15_000;
 
 let counter = 0;
 let prevStatus = '';
@@ -34,7 +34,8 @@ async function trackPizza(orderId: string) {
       return;
     }
 
-    if (status !== prevStatus) {
+    if (status !== prevStatus || counter % 4 === 0) {
+      // Update the HUD only if the status has changed or every 4 attempts (once per minute)
       await showHUD(`Pizza Status: ${status} (Wait: ${minWait}-${maxWait} min)`);
       prevStatus = status;
     }
@@ -51,6 +52,7 @@ async function trackPizza(orderId: string) {
     await trackPizza(orderId);
   } else {
     console.log('Tracking ended after 20 minutes.');
+    await showHUD('Tracking ended after 20 minutes. Please check your order status manually.');
     return;
   }
 }
